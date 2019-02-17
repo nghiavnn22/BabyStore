@@ -22,7 +22,8 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>                 
                     <li>@Html.ActionLink("Shop by Category", "Index", "Categories")</li>
-                    <li>@Html.ActionLink("View All Our Products", "Index", "Products")</li>
+                    <li>@Html.RouteLink("View all our Products","ProductsIndex")</li>
+                    <li>@Html.ActionLink("Manage Images","Index","ProductImages")</li>
                 </ul>
                @using (Html.BeginForm("Index", "Products", FormMethod.Get, new { @class = "navbar-form navbar-left" }))
                {

@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using BabyStore.Models;
+using PagedList;
 
 namespace BabyStore.ViewModels
 {
     public class ProductIndexViewModel
     {
-        public IQueryable<Product> Products { get; set; }
+        public IPagedList<Product> Products { get; set; }
         public string Search { get; set; }
         public IEnumerable<CategoryWithCount> CatWithCount { get; set; }
         public string Category { get; set; }
+        public string SortBy { get; set; }
+        public Dictionary<string,string> Sorts { get; set; }
         public IEnumerable<SelectListItem> CatFilterItems
         {
             get

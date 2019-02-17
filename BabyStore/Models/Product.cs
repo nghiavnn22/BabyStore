@@ -22,6 +22,7 @@ namespace BabyStore.Models
         [Range(0.10,1000,ErrorMessage ="Please enter product price between 0.10 and 1000")]
         [DataType(DataType.Currency)]
         [DisplayFormat(DataFormatString ="{0:c}")]
+        [RegularExpression("[0-9]+(\\.[0-9][0-9]?)?",ErrorMessage ="The price must be a number up to two decimal places")]
         public decimal Price { get; set; }
         public int? CategoryID { get; set; }
         public virtual Category Category { get; set; }

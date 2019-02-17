@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using BabyStore.DAL;
 using BabyStore.Models;
 using BabyStore.ViewModels;
+using PagedList;
 
 namespace BabyStore.Controllers
 {
@@ -17,7 +18,7 @@ namespace BabyStore.Controllers
         private StoreContext db = new StoreContext();
 
         // GET: Products
-        public ActionResult Index(string category,string search)
+        public ActionResult Index(string category,string search, string sortBy,int? page)
         {
             ProductIndexViewModel viewModel = new ProductIndexViewModel();
             var products = db.Products.Include(p => p.Category);
@@ -42,8 +43,31 @@ namespace BabyStore.Controllers
             if (!String.IsNullOrEmpty(category))
             {
                 products = products.Where(p => p.Category.Name == category);
+                viewModel.Category = category;
             }
-            viewModel.Products = products;
+            // sort the result
+            switch (sortBy)
+            {
+                case "price_lowest":
+                    products = products.OrderBy(p=>p.Price);
+                    break;
+                case "price_highest":
+                    products = products.OrderByDescending(p=>p.Price);
+                    break;
+                default:
+                    products = products.OrderBy(p => p.Name);
+                    break;
+
+            }
+            int currentPage = (page ?? 1);
+            viewModel.Products = products.ToPagedList(currentPage, Constants.PageItems);
+            viewModel.SortBy = sortBy;
+            
+            viewModel.Sorts = new Dictionary<string, string>
+            {
+                {"price low to high","price_lowest" },
+                { "price high to low","price_highest"}
+            };
             return View(viewModel);
         }
 
@@ -63,7 +87,7 @@ namespace BabyStore.Controllers
         }
 
         // GET: Products/Create
-        public ActionResult Create()
+        public ActionResult Upload()
         {
             ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name");
             return View();
@@ -74,18 +98,7 @@ namespace BabyStore.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Name,Description,Price,CategoryID")] Product product)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Products.Add(product);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", product.CategoryID);
-            return View(product);
-        }
+       
 
         // GET: Products/Edit/5
         public ActionResult Edit(int? id)
